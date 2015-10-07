@@ -1,0 +1,6 @@
+C:\Users\Adm\Documents\GitHub\SCT2\ScroogeCoin\bin\Debug\GoofyCoin.exe.config
+C:\Users\Adm\Documents\GitHub\SCT2\ScroogeCoin\obj\Debug\GoofyCoin.exe
+C:\Users\Adm\Documents\GitHub\SCT2\ScroogeCoin\obj\Debug\GoofyCoin.pdb
+C:\Users\Adm\Documents\GitHub\SCT2\ScroogeCoin\bin\Debug\GoofyCoin.exe
+C:\Users\Adm\Documents\GitHub\SCT2\ScroogeCoin\bin\Debug\GoofyCoin.pdb
+C:\Users\Adm\Documents\GitHub\SCT2\ScroogeCoin\obj\Debug\ScroogeCoin.csprojResolveAssemblyReference.cache
