@@ -10,69 +10,117 @@ using System.Threading.Tasks;
 namespace ScroogeCoin
 {
     [Serializable]
-    public class TransferHash
+    public class UserSignedTrans : SignedMessage, IUserSignedTrans
     {
         [NonSerialized]
-        private Transfer transfer;
+        private SerializedTransfer srlzdTrans;
 
-        [NonSerialized]
-        private byte[] transHash;
-
-        [NonSerialized]
-        private SignedTransfer sgndTrans;
-
-        private byte[] hashSgndTrans;
-
-        public byte[] HashSgndTrans
+        public SerializedTransfer SerializedTransfer
         {
-            get { return hashSgndTrans; }
+            get { return srlzdTrans; }
         }
 
-        public TransferHash(Transfer trans, Signature mySignature)
+        ISerializedTransfer IUserSignedTrans.SerializedTransfer
         {
-            this.transfer = trans;
-            var serializedTrans = SerializeObject(trans);
-            this.transHash = Hash(serializedTrans);
-            this.sgndTrans = mySignature.SignHash(transHash);
-            this.hashSgndTrans = Hash(sgndTrans.SignedData);
+            get { return SerializedTransfer; }
         }
 
-        public bool isValidHash()
+        public UserSignedTrans(SerializedTransfer trans, byte[] userPk, byte[] userSgndTrans)
+            :base(userPk, userSgndTrans)
         {
-            var serializedObj = SerializeObject(transfer);
-            var hash = Hash(serializedObj);
-            var bo = sgndTrans.IsValidSignedHash(hash, transfer.DestinyPk);
-            return true;
+            this.srlzdTrans = trans;
         }
 
-        private byte[] Hash(byte[] info)
+        public bool isValidUserSignature(byte[] ownerPk)
         {
-            return new SHA256Managed().ComputeHash(info, 0, info.Length);
+            return this.IsValidSignedMsg(this.srlzdTrans, ownerPk);
         }
 
-        /// <summary>
-        /// Serialize an object
-        /// </summary>
-        /// <param name="obj">Object instance</param>
-        /// <returns>Serialized object</returns>
-        private static byte[] SerializeObject(object obj)
+        private bool IsValidSignedMsg(SerializedTransfer srlzdTrans, byte[] publicKey)
         {
-            byte[] ret;
-            using (var ms = new MemoryStream())
-            {
-                var bf = new BinaryFormatter();
-                bf.Serialize(ms, obj);
-                ret = ms.ToArray();
-            }
-
-            return ret;
+            return this.IsValidSignedMsg(srlzdTrans.SerializedTransBytes, publicKey);
         }
     }
 
     [Serializable]
-    public class Transfer
+    public class AuthoritySignedTrans : SignedMessage, IAuthoritySignedTrans
     {
-        private TransferHash previous;
+        [NonSerialized]
+        private UserSignedTrans userSgndTrans;
+
+        public UserSignedTrans UserSignedTransfer
+        {
+            get { return userSgndTrans; }
+        }
+
+        IUserSignedTrans IAuthoritySignedTrans.UserSignedTransfer
+        {
+            get { return this.UserSignedTransfer; }
+        }
+
+        public TransferHash Hash
+        {
+            get { return new TransferHash(this); }
+        }
+
+        public AuthoritySignedTrans(UserSignedTrans userSgndTrans, byte[] authorityPk, byte[] authoSgndTrans)
+            : base(authorityPk, authoSgndTrans)
+        {
+            this.userSgndTrans = userSgndTrans;
+        }
+
+        //public bool isValidHash()
+        //{
+        //    var serializedObj = SerializeObject(transfer);
+        //    var hash = Hash(serializedObj);
+        //    var bo = sgndTrans.IsValidSignedHash(hash, transfer.DestinyPk);
+        //    return true;
+        //}
+
+        public bool isValidAuthoritySignature(byte[] ownerPk)
+        {
+            return this.IsValidSignedMsg(this.userSgndTrans, ownerPk);
+        }
+
+        private bool IsValidSignedMsg(UserSignedTrans userSgndTrans, byte[] publicKey)
+        {
+            return this.IsValidSignedMsg(userSgndTrans.SignedData, publicKey);
+        }
+
+    }
+
+    [Serializable]
+    public class TransferHash : Hash, ITransferHash
+    {
+        [NonSerialized]
+        private AuthoritySignedTrans authoSgndTrans;
+
+        public AuthoritySignedTrans AuthoritySignedTrans
+        {
+            get { return authoSgndTrans; }
+        }
+
+        IAuthoritySignedTrans ITransferHash.AuthoritySignedTrans
+        {
+            get { return this.AuthoritySignedTrans; }
+        }
+
+        public TransferHash(byte[] hashCode)
+            : base(hashCode)
+        {
+        }
+
+        public TransferHash(AuthoritySignedTrans authoSgndTrans)
+            :this(new HashData(authoSgndTrans.SignedData).HashCode)
+        {
+            this.authoSgndTrans = authoSgndTrans;
+        }
+    }
+
+    [Serializable]
+    public class Transfer : ITransfer
+    {
+        private TransferHash previousHash;
 
         byte[] destinyPk;
 
@@ -80,7 +128,12 @@ namespace ScroogeCoin
 
         public TransferHash Previous
         {
-            get { return previous; }
+            get { return previousHash; }
+        }
+
+        byte[] ITransfer.Previous
+        {
+            get { return Previous.HashCode; }
         }
 
         public byte[] DestinyPk
@@ -92,15 +145,22 @@ namespace ScroogeCoin
         {
             this.coin = coin;
             this.destinyPk = destinyPk;
-            this.previous = null;
+            this.previousHash = null;
         }
 
-        public Transfer(TransferHash previous, byte[] destinyPk)
+        public Transfer(ITransferHash previous, byte[] destinyPk)
         {
             this.coin = null;
             this.destinyPk = destinyPk;
-            this.previous = previous;
+            this.previousHash = new TransferHash(previous.HashCode);
         }
+
+        public Transfer(TransferHash previous, ITransfer trans)
+            :this(previous, trans.DestinyPk)
+        {
+        }
+
+
     }
 
     public class Person
@@ -118,17 +178,17 @@ namespace ScroogeCoin
             this.mySig = new Signature(sizeKey);
         }
 
-        public Transfer PayTo(Transfer trans, byte[] destinyPk)
-        {
-            var prevHash = new TransferHash(trans, mySig);
-            return new Transfer(prevHash, destinyPk);
-        }
+        //public Transfer PayTo(Transfer trans, byte[] destinyPk)
+        //{
+        //    var prevHash = new TransferUserSignature(trans, mySig);
+        //    return new Transfer(prevHash, destinyPk);
+        //}
     }
     public class Authority : Person
     {
         public Transfer CreateCoin(byte[] destinyPk)
         {
-            return new Transfer(new Coin(), destinyPk); 
+            return new Transfer(new Coin(), destinyPk);
         }
     }
 }

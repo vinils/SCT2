@@ -12,13 +12,13 @@ namespace ScroogeCoin
     /// Signed Transfer with the public key and the signed data
     /// </summary>
     [Serializable]
-    public class SignedTransfer
+    public class SignedMessage
     {
         /// <summary>
         /// Signed data
         /// </summary>
         [NonSerialized]
-        private byte[] sgndData;
+        protected byte[] sgndData;
 
         /// <summary>
         /// Public key
@@ -27,11 +27,11 @@ namespace ScroogeCoin
         private byte[] publicKey;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SignedTransfer"/> class.
+        /// Initializes a new instance of the <see cref="SignedMessage"/> class.
         /// </summary>
         /// <param name="publicKey">Public key</param>
         /// <param name="sgndData">Signed data</param>
-        public SignedTransfer(byte[] publicKey, byte[] sgndData)
+        public SignedMessage(byte[] publicKey, byte[] sgndData)
         {
             this.publicKey = publicKey;
             this.sgndData = sgndData;
@@ -104,6 +104,22 @@ namespace ScroogeCoin
                 //// verifying hashed message
                 ////bReturn = dsa.VerifyHash(dataHash, SignedMsg);
                 ret = dsa.VerifyHash(hash, this.sgndData);
+            }
+
+            return ret;
+        }
+
+        protected bool IsValidSignedMsg(byte[] msg, byte[] publicKey)
+        {
+            bool ret;
+
+            using (var dsa = new ECDsaCng(CngKey.Import(publicKey, CngKeyBlobFormat.EccPublicBlob)))
+            {
+                dsa.HashAlgorithm = Global.HashAlgorithm;
+
+                //// verifying hashed message
+                ////bReturn = dsa.VerifyHash(dataHash, SignedMsg);
+                ret = dsa.VerifyData(msg, this.sgndData);
             }
 
             return ret;

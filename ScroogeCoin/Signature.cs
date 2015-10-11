@@ -5,6 +5,8 @@
 //-----------------------------------------------------------------------
 namespace ScroogeCoin
 {
+    using System.IO;
+    using System.Runtime.Serialization.Formatters.Binary;
     using System.Security.Cryptography;
 
     /// <summary>
@@ -47,7 +49,7 @@ namespace ScroogeCoin
         /// </summary>
         /// <param name="hash">hash information</param>
         /// <returns>return signed hash</returns>
-        public SignedTransfer SignHash(byte[] hash)
+        public SignedMessage SignHash(byte[] hash)
         {
             //// signing hash data
             ////var msgHashed = new SHA1Managed().ComputeHash(message);
@@ -55,23 +57,42 @@ namespace ScroogeCoin
 
             ////var sgndData = this.dsa.SignData(msg);
             var sgndData = this.dsa.SignHash(hash);
-            return new SignedTransfer(this.publicKey, sgndData);
+            return new SignedMessage(this.publicKey, sgndData);
         }
 
-        ///// <summary>
-        ///// Sign a message
-        ///// </summary>
-        ///// <param name="msg">Message instance</param>
-        ///// <returns>Signed message</returns>
-        //protected SignedMessage SignMsg(byte[] msg)
-        //{
-        //    //// signing hash data
-        //    ////var msgHashed = new SHA1Managed().ComputeHash(message);
-        //    ////var sgndData = dsa.SignHash(msgHashed); 
+        /// <summary>
+        /// Sign a message
+        /// </summary>
+        /// <param name="msg">Message instance</param>
+        /// <returns>Signed message</returns>
+        private byte[] SignMsg(byte[] msg)
+        {
+            //// signing hash data
+            ////var msgHashed = new SHA1Managed().ComputeHash(message);
+            ////var sgndData = dsa.SignHash(msgHashed); 
 
-        //    ////var sgndData = this.dsa.SignData(msg);
-        //    var sgndData = this.dsa.SignData(msg);
-        //    return new SignedMessage(this.publicKey, sgndData);
-        //}
+            ////var sgndData = this.dsa.SignData(msg);
+            return this.dsa.SignData(msg);
+        }
+
+        private byte[] SignMsg(SerializedTransfer srlzdTrans)
+        {
+            return this.SignMsg(srlzdTrans.SerializedTransBytes);
+        }
+
+        private byte[] SignMsg(UserSignedTrans userSgndTrans)
+        {
+            return this.SignMsg(userSgndTrans.SignedData);
+        }
+
+        public UserSignedTrans SignTransfer(SerializedTransfer srlzdTrans)
+        {
+            return new UserSignedTrans(srlzdTrans, this.publicKey, this.SignMsg(srlzdTrans));
+        }
+
+        public AuthoritySignedTrans SignTransfer(UserSignedTrans userSgndTrans)
+        {
+            return new AuthoritySignedTrans(userSgndTrans, publicKey, this.SignMsg(userSgndTrans));
+        }
     }
 }

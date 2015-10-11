@@ -7,8 +7,8 @@
     <ProjectGuid>{866AF615-409E-4B76-BD58-7D9531C5EE72}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GoofyCoin</RootNamespace>
-    <AssemblyName>GoofyCoin</AssemblyName>
+    <RootNamespace>ScroogeCoin</RootNamespace>
+    <AssemblyName>ScroogeCoin</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -45,8 +45,15 @@
   <ItemGroup>
     <Compile Include="Coin.cs" />
     <Compile Include="Global.cs" />
+    <Compile Include="Hash.cs" />
+    <Compile Include="IAuthoritySignedTrans.cs" />
+    <Compile Include="ISerializedTransfer.cs" />
+    <Compile Include="ITransfer.cs" />
+    <Compile Include="ITransferHash.cs" />
+    <Compile Include="IUserSignedTrans.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialize.cs" />
     <Compile Include="Signature.cs" />
     <Compile Include="SignedTrans.cs" />
     <Compile Include="Transfer.cs" />
