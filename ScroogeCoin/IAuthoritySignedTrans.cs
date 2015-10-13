@@ -4,6 +4,6 @@
     {
         IUserSignedTrans UserSignedTransfer { get; }
 
-        bool isValidAuthoritySignature(byte[] ownerPk);
+        bool isValidAuthoritySignature(Bytes ownerPk);
     }
 }

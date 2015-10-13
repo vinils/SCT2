@@ -9,32 +9,32 @@ using System.Threading.Tasks;
 namespace ScroogeCoin
 {
     [Serializable]
-    public class SerializedTransfer : ISerializedTransfer
+    public abstract class Serialized
     {
         [NonSerialized]
-        private Transfer trans;
+        private object obj;
         [NonSerialized]
-        private byte[] srlzdTrans;
+        private Bytes srlzdObj;
 
-        public Transfer Transfer
+        protected object Obj
         {
-            get { return trans; }
+            get { return obj; }
         }
 
-        public byte[] SerializedTransBytes
+        public Bytes SerializedObj
         {
-            get { return srlzdTrans; }
+            get { return srlzdObj; }
         }
 
-        ITransfer ISerializedTransfer.Transfer
+        public Serialized(object obj)
         {
-            get { return Transfer; }
+            this.obj = obj;
+            this.srlzdObj = SerializeObject(this.obj);
         }
 
-        public SerializedTransfer(Transfer trans)
+        protected Object DeserializeObject()
         {
-            this.trans = trans;
-            this.srlzdTrans = SerializeObject(this.trans);
+            return DeserializeObject(srlzdObj);
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace ScroogeCoin
         /// </summary>
         /// <param name="obj">Object instance</param>
         /// <returns>Serialized object</returns>
-        private static byte[] SerializeObject(Transfer trans)
+        protected static Bytes SerializeObject(object trans)
         {
-            byte[] ret;
+            Bytes ret;
             using (var ms = new MemoryStream())
             {
                 var bf = new BinaryFormatter();
@@ -58,17 +58,17 @@ namespace ScroogeCoin
         /// <summary>
         /// Deserialize an object
         /// </summary>
-        /// <param name="byts">Serialized object</param>
+        /// <param name="bytes">Serialized object</param>
         /// <returns>deserialized object</returns>
-        private static object DeserializeObject(byte[] byts)
+        protected static object DeserializeObject(Bytes bytes)
         {
             object ret;
 
-            using (var ms = new System.IO.MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 var bf = new BinaryFormatter();
-                ms.Write(byts, 0, byts.Length);
-                ms.Seek(0, System.IO.SeekOrigin.Begin);
+                ms.Write(bytes, 0, bytes.Length);
+                ms.Seek(0, SeekOrigin.Begin);
                 ret = bf.Deserialize(ms);
             }
 

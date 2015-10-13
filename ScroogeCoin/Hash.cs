@@ -11,19 +11,19 @@ namespace ScroogeCoin
     public class HashData:Hash
     {
         [NonSerialized]
-        private byte[] data;
+        private Bytes data;
 
-        public byte[] Data
+        public Bytes Data
         {
             get { return data; }
         }
-        public HashData(byte[] data)
+        public HashData(Bytes data)
             :base(Hash(data))
         {
             this.data = data;
         }
 
-        private static byte[] Hash(byte[] data)
+        private static Bytes Hash(Bytes data)
         {
             return new SHA256Managed().ComputeHash(data);
         }
@@ -32,48 +32,22 @@ namespace ScroogeCoin
     [Serializable]
     public class Hash
     {
-        private byte[] hashCode;
+        private Bytes hashCode;
 
-        public byte[] HashCode
+        public Bytes HashCode
         {
             get { return hashCode; }
         }
 
-        //public Hash(byte[] hash)
+        //public Hash(Bytes hash)
         //    :base(null)
         //{
         //    this.hashCode = hash;
         //}
 
-        public Hash(byte[] hashCode)
+        public Hash(Bytes hashCode)
         {
             this.hashCode = hashCode;
-        }
-
-        public bool comperHash(byte[] hashComp)
-        {
-            for (int x = 0; x < this.hashCode.Length; x++)
-            {
-                if (this.hashCode[x] != hashComp[x])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public static bool comperHash(byte[] hashComp1, byte[] hashComp2)
-        {
-            for (int x = 0; x < hashComp1.Length; x++)
-            {
-                if (hashComp1[x] != hashComp2[x])
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }

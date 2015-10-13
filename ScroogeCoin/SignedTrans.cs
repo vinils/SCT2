@@ -18,20 +18,20 @@ namespace ScroogeCoin
         /// Signed data
         /// </summary>
         [NonSerialized]
-        protected byte[] sgndData;
+        protected Bytes sgndData;
 
         /// <summary>
         /// Public key
         /// </summary>
         [NonSerialized]
-        private byte[] publicKey;
+        private Bytes publicKey;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SignedMessage"/> class.
         /// </summary>
         /// <param name="publicKey">Public key</param>
         /// <param name="sgndData">Signed data</param>
-        public SignedMessage(byte[] publicKey, byte[] sgndData)
+        public SignedMessage(Bytes publicKey, Bytes sgndData)
         {
             this.publicKey = publicKey;
             this.sgndData = sgndData;
@@ -40,7 +40,7 @@ namespace ScroogeCoin
         /// <summary>
         /// Gets public key
         /// </summary>
-        public byte[] PublicKey
+        public Bytes PublicKey
         {
             get { return this.publicKey; }
         }
@@ -48,7 +48,7 @@ namespace ScroogeCoin
         /// <summary>
         /// Gets signed data
         /// </summary>
-        public byte[] SignedData
+        public Bytes SignedData
         {
             get { return this.sgndData; }
         }
@@ -93,7 +93,7 @@ namespace ScroogeCoin
         /// <param name="hash">transfer info hash</param>
         /// <param name="publicKey">public key</param>
         /// <returns>true if the signed hash belong to the hash and public key</returns>
-        public bool IsValidSignedHash(byte[] hash, byte[] publicKey)
+        public bool IsValidSignedHash(Bytes hash, Bytes publicKey)
         {
             bool ret;
 
@@ -109,7 +109,7 @@ namespace ScroogeCoin
             return ret;
         }
 
-        protected bool IsValidSignedMsg(byte[] msg, byte[] publicKey)
+        protected bool IsValidSignedMsg(Bytes msg, Bytes publicKey)
         {
             bool ret;
 

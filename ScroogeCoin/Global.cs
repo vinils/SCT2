@@ -22,12 +22,12 @@ namespace ScroogeCoin
         /// <summary>
         /// Goofy public key
         /// </summary>
-        private static byte[] goofyPk;
+        private static Bytes goofyPk;
 
         /// <summary>
         /// Gets or sets goofy public key
         /// </summary>
-        public static byte[] ScroogePk
+        public static Bytes ScroogePk
         {
             get { return goofyPk; }
             set { goofyPk = value; }

@@ -2,8 +2,8 @@
 {
     public interface IUserSignedTrans
     {
-        ISerializedTransfer SerializedTransfer { get; }
+        ITransfer Transfer { get; }
 
-        bool isValidUserSignature(byte[] ownerPk);
+        bool isValidUserSignature(Bytes ownerPk);
     }
 }

@@ -13,32 +13,33 @@ namespace ScroogeCoin
     public class UserSignedTrans : SignedMessage, IUserSignedTrans
     {
         [NonSerialized]
-        private SerializedTransfer srlzdTrans;
+        private Transfer trans;
 
-        public SerializedTransfer SerializedTransfer
+        public Transfer Transfer
         {
-            get { return srlzdTrans; }
+            get { return trans; }
         }
 
-        ISerializedTransfer IUserSignedTrans.SerializedTransfer
+        ITransfer IUserSignedTrans.Transfer
         {
-            get { return SerializedTransfer; }
+            get { return Transfer; }
         }
 
-        public UserSignedTrans(SerializedTransfer trans, byte[] userPk, byte[] userSgndTrans)
+        public UserSignedTrans(SerializedTransfer srlzdTrans, Bytes userPk, Bytes userSgndTrans)
             :base(userPk, userSgndTrans)
         {
-            this.srlzdTrans = trans;
+            this.trans = srlzdTrans.DeserializeTransfer();
         }
 
-        public bool isValidUserSignature(byte[] ownerPk)
+        public bool isValidUserSignature(Bytes ownerPk)
         {
-            return this.IsValidSignedMsg(this.srlzdTrans, ownerPk);
+            var srlzTrans = new SerializedTransfer(this.trans);
+            return this.IsValidSignedMsg(srlzTrans.SerializedObj, ownerPk);
         }
 
-        private bool IsValidSignedMsg(SerializedTransfer srlzdTrans, byte[] publicKey)
+        private bool IsValidSignedMsg(SerializedTransfer srlzdTrans, Bytes publicKey)
         {
-            return this.IsValidSignedMsg(srlzdTrans.SerializedTransBytes, publicKey);
+            return this.IsValidSignedMsg(srlzdTrans.SerializedObj, publicKey);
         }
     }
 
@@ -63,7 +64,7 @@ namespace ScroogeCoin
             get { return new TransferHash(this); }
         }
 
-        public AuthoritySignedTrans(UserSignedTrans userSgndTrans, byte[] authorityPk, byte[] authoSgndTrans)
+        public AuthoritySignedTrans(UserSignedTrans userSgndTrans, Bytes authorityPk, Bytes authoSgndTrans)
             : base(authorityPk, authoSgndTrans)
         {
             this.userSgndTrans = userSgndTrans;
@@ -77,16 +78,15 @@ namespace ScroogeCoin
         //    return true;
         //}
 
-        public bool isValidAuthoritySignature(byte[] ownerPk)
+        public bool isValidAuthoritySignature(Bytes ownerPk)
         {
             return this.IsValidSignedMsg(this.userSgndTrans, ownerPk);
         }
 
-        private bool IsValidSignedMsg(UserSignedTrans userSgndTrans, byte[] publicKey)
+        private bool IsValidSignedMsg(UserSignedTrans userSgndTrans, Bytes publicKey)
         {
             return this.IsValidSignedMsg(userSgndTrans.SignedData, publicKey);
         }
-
     }
 
     [Serializable]
@@ -105,7 +105,7 @@ namespace ScroogeCoin
             get { return this.AuthoritySignedTrans; }
         }
 
-        public TransferHash(byte[] hashCode)
+        public TransferHash(Bytes hashCode)
             : base(hashCode)
         {
         }
@@ -118,49 +118,187 @@ namespace ScroogeCoin
     }
 
     [Serializable]
-    public class Transfer : ITransfer
+    public class TransferInfo 
     {
-        private TransferHash previousHash;
+        private double? value;
+        private Bytes destinyPk;
 
-        byte[] destinyPk;
-
-        Coin coin;
-
-        public TransferHash Previous
+        public double? Value
         {
-            get { return previousHash; }
+            get { return value; }
         }
 
-        byte[] ITransfer.Previous
-        {
-            get { return Previous.HashCode; }
-        }
-
-        public byte[] DestinyPk
+        public Bytes DestinyPk
         {
             get { return destinyPk; }
         }
 
-        public Transfer(Coin coin, byte[] destinyPk)
+        public TransferInfo(double? value, Bytes destinyPk)
+        {
+            this.value = value;
+            this.destinyPk = destinyPk;
+        }
+    }
+
+    [Serializable]
+    public class TransferId : TransferInfo, IOriginId
+    {
+        private int id;
+
+        public int Id
+        {
+            get { return this.id; }
+        }
+
+        public TransferId(int id)
+            :this(null, null, id)
+        {
+        }
+
+        public TransferId(double? value, Bytes destinyPk, int id)
+            :base(value, destinyPk)
+        {
+            this.id = id;
+        }
+
+        public static implicit operator TransferId (IOriginId originId)
+        {
+            return new TransferId(originId.Id);
+        }
+    }
+
+    public class DestinyIdManage
+    {
+        private int transCount = 0;
+        private TransferId[] destinyIds;
+
+        public TransferId[] DestinyIds
+        {
+            get { return destinyIds; }
+        }
+
+        public DestinyIdManage(TransferInfo[] destinyInfo)
+        {
+            destinyIds = new TransferId[destinyInfo.Length];
+            foreach (var data in destinyInfo)
+            {
+                var id = ++transCount;
+                destinyIds[id] = new TransferId(data.Value, data.DestinyPk, id);
+            }
+        }
+
+        public static implicit operator TransferId[](DestinyIdManage destinies)
+        {
+            return destinies.destinyIds;
+        }
+    }
+
+    [Serializable]
+    public class Origin: IOrigin
+    {
+        private TransferHash hash;
+        private TransferId[] origins;
+
+        public TransferHash Hash
+        {
+            get { return this.hash; }
+        }
+
+        ITransferHash IOrigin.Hash
+        {
+            get { return this.hash; }
+        }
+
+        IOriginId[] IOrigin.OriginId
+        {
+            get { return this.origins; }
+        }
+
+        protected Origin (TransferHash hash, TransferId[] originIds)
+        {
+            this.hash = hash;
+            this.origins = originIds;
+
+        }
+
+        public Origin(ITransferHash hash, IOriginId[] originIds)
+            :this(
+                 new TransferHash(hash.HashCode), 
+                 originIds)
+        {
+            this.hash = new TransferHash(hash.HashCode);
+
+            this.origins = new TransferId[originIds.Length];
+            for(int x = 0; x <= originIds.Length; x++)
+            {
+                this.origins[x] = new TransferId(originIds[x].Id);
+            }
+            /////// criar um cast (TransferId) IOriginId para fazer automaticamente e para lembrar que isso eh uma conversao e que todos os dados do 
+            /////// objeto a deve ser passado para o objeto b
+
+
+            this.hash 
+            this.origins = new TransferId[destinyIds.Length];
+            //for(int x = 0; x <= originIds.Length; x++)
+            //    this.origins[x] = new TransferId(originIds[x].Id);
+
+        }
+
+    }
+
+    [Serializable]
+    public class Transfer : ITransfer
+    {
+        private Origin[] origins;
+
+        TransferId[] destiniesIds;
+
+        Coin coin;
+
+        public Origin[] Origins
+        {
+            get { return origins; }
+        }
+
+        IOrigin[] ITransfer.Origins
+        {
+            get { return origins; }
+        }
+
+        public TransferId[] Destinies
+        {
+            get { return destiniesIds; }
+        }
+
+        //public Destiny this[int idx]
+        //{
+        //    get
+        //    {
+        //        return destinies[idx];
+        //    }
+        //}
+
+        public Transfer(Coin coin, DestinyIdManage destinies)
         {
             this.coin = coin;
-            this.destinyPk = destinyPk;
-            this.previousHash = null;
+            this.destiniesIds = destinies;
+            this.origins = null;
         }
 
-        public Transfer(ITransferHash previous, byte[] destinyPk)
+        protected Transfer(IOrigin[] origins, TransferId[] destinies)
         {
             this.coin = null;
-            this.destinyPk = destinyPk;
-            this.previousHash = new TransferHash(previous.HashCode);
+            this.origins = new Origin[origins.Length];
+            for (int x = 0; x <= origins.Length; x++)
+                this.origins[x] = new Origin(origins[x].Hash, origins[x].OriginId);
+            this.destiniesIds = destinies;
         }
 
-        public Transfer(TransferHash previous, ITransfer trans)
-            :this(previous, trans.DestinyPk)
+
+        public Transfer(IOrigin[] origins, DestinyIdManage destinies)
+            :this(origins, (TransferId[])destinies)
         {
         }
-
-
     }
 
     public class Person
@@ -168,7 +306,7 @@ namespace ScroogeCoin
         private Signature mySig;
         private const int sizeKey = 256;
 
-        public byte[] PublicKey
+        public Bytes PublicKey
         {
             get { return mySig.PublicKey; }
         }
@@ -178,7 +316,7 @@ namespace ScroogeCoin
             this.mySig = new Signature(sizeKey);
         }
 
-        //public Transfer PayTo(Transfer trans, byte[] destinyPk)
+        //public Transfer PayTo(Transfer trans, Bytes destinyPk)
         //{
         //    var prevHash = new TransferUserSignature(trans, mySig);
         //    return new Transfer(prevHash, destinyPk);
@@ -186,7 +324,7 @@ namespace ScroogeCoin
     }
     public class Authority : Person
     {
-        public Transfer CreateCoin(byte[] destinyPk)
+        public Transfer CreateCoin(Bytes destinyPk)
         {
             return new Transfer(new Coin(), destinyPk);
         }

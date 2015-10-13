@@ -22,7 +22,7 @@ namespace ScroogeCoin
         /// <summary>
         /// Public key
         /// </summary>
-        private byte[] publicKey;
+        private Bytes publicKey;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Signature"/> class.
@@ -32,13 +32,13 @@ namespace ScroogeCoin
         {
             this.dsa = new ECDsaCng(sizeKey);
             this.dsa.HashAlgorithm = Global.HashAlgorithm;
-            this.publicKey = this.dsa.Key.Export(CngKeyBlobFormat.EccPublicBlob);
+            this.publicKey = new Bytes(this.dsa.Key.Export(CngKeyBlobFormat.EccPublicBlob));
         }
 
         /// <summary>
         /// Gets or sets Public key
         /// </summary>
-        public byte[] PublicKey
+        public Bytes PublicKey
         {
             get { return this.publicKey; }
             protected set { this.publicKey = value; }
@@ -49,7 +49,7 @@ namespace ScroogeCoin
         /// </summary>
         /// <param name="hash">hash information</param>
         /// <returns>return signed hash</returns>
-        public SignedMessage SignHash(byte[] hash)
+        public SignedMessage SignHash(Bytes hash)
         {
             //// signing hash data
             ////var msgHashed = new SHA1Managed().ComputeHash(message);
@@ -65,7 +65,7 @@ namespace ScroogeCoin
         /// </summary>
         /// <param name="msg">Message instance</param>
         /// <returns>Signed message</returns>
-        private byte[] SignMsg(byte[] msg)
+        private Bytes SignMsg(Bytes msg)
         {
             //// signing hash data
             ////var msgHashed = new SHA1Managed().ComputeHash(message);
@@ -75,12 +75,12 @@ namespace ScroogeCoin
             return this.dsa.SignData(msg);
         }
 
-        private byte[] SignMsg(SerializedTransfer srlzdTrans)
+        private Bytes SignMsg(SerializedTransfer srlzdTrans)
         {
             return this.SignMsg(srlzdTrans.SerializedTransBytes);
         }
 
-        private byte[] SignMsg(UserSignedTrans userSgndTrans)
+        private Bytes SignMsg(UserSignedTrans userSgndTrans)
         {
             return this.SignMsg(userSgndTrans.SignedData);
         }

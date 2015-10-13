@@ -3,6 +3,6 @@
     public interface ITransferHash
     {
         IAuthoritySignedTrans AuthoritySignedTrans { get; }
-        byte[] HashCode { get; }
+        Bytes HashCode { get; }
     }
 }
