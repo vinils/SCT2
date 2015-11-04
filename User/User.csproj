@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{866AF615-409E-4B76-BD58-7D9531C5EE72}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{CAFAD201-7DA6-490A-99E3-41A81C9D16B3}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ScroogeCoin</RootNamespace>
-    <AssemblyName>ScroogeCoin</AssemblyName>
+    <RootNamespace>User</RootNamespace>
+    <AssemblyName>User</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,7 +23,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -44,25 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extension.cs" />
+    <Compile Include="OriginArray.cs" />
+    <Compile Include="OriginLinkedList.cs" />
+    <Compile Include="OriginNode.cs" />
+    <Compile Include="Person.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
+    <Compile Include="Signature.cs" />
+    <Compile Include="Transfer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Global\Global.csproj">
       <Project>{e1858bb2-dd8f-4fb4-b59d-0342c2f1d59f}</Project>
       <Name>Global</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Scrooge\Scrooge.csproj">
-      <Project>{91906a94-963a-4572-be00-cce87e980e63}</Project>
-      <Name>Scrooge</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\User\User.csproj">
-      <Project>{cafad201-7da6-490a-99e3-41a81c9d16b3}</Project>
-      <Name>User</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

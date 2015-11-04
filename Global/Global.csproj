@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{866AF615-409E-4B76-BD58-7D9531C5EE72}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{E1858BB2-DD8F-4FB4-B59D-0342C2F1D59F}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ScroogeCoin</RootNamespace>
-    <AssemblyName>ScroogeCoin</AssemblyName>
+    <RootNamespace>Global</RootNamespace>
+    <AssemblyName>Global</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,7 +23,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -44,26 +41,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthorityApproval.cs" />
+    <Compile Include="Bytes.cs" />
     <Compile Include="Extension.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Global.cs" />
+    <Compile Include="Hash.cs" />
+    <Compile Include="IAuthoritySignedTrans.cs" />
+    <Compile Include="IOrigin.cs" />
+    <Compile Include="IOriginId.cs" />
+    <Compile Include="ITransfer.cs" />
+    <Compile Include="ITransferHash.cs" />
+    <Compile Include="ITransferId.cs" />
+    <Compile Include="LinkedList.cs" />
+    <Compile Include="NodeId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Global\Global.csproj">
-      <Project>{e1858bb2-dd8f-4fb4-b59d-0342c2f1d59f}</Project>
-      <Name>Global</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Scrooge\Scrooge.csproj">
-      <Project>{91906a94-963a-4572-be00-cce87e980e63}</Project>
-      <Name>Scrooge</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\User\User.csproj">
-      <Project>{cafad201-7da6-490a-99e3-41a81c9d16b3}</Project>
-      <Name>User</Name>
-    </ProjectReference>
+    <Compile Include="Serialized.cs" />
+    <Compile Include="SerializedTransfer.cs" />
+    <Compile Include="SerializedTransferHash.cs" />
+    <Compile Include="SerializedUserSignedTrans.cs" />
+    <Compile Include="Signature.cs" />
+    <Compile Include="SignedMessage.cs" />
+    <Compile Include="TransferIdLinkedList.cs" />
+    <Compile Include="TransferIdNode.cs" />
+    <Compile Include="TransferInfo.cs" />
+    <Compile Include="UserRequest.cs" />
+    <Compile Include="UserSignedTrans.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
