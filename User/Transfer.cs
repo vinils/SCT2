@@ -36,7 +36,7 @@
         }
 
         public Transfer(IOrigin[] origins, TransferInfo[] destinies)
-            : this(origins, destinies.ToTransIds().ToArray())
+            : this(origins, destinies.ToTransIdsArray())
         {
         }
 

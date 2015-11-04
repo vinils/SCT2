@@ -27,7 +27,7 @@ namespace ScroogeCoin
             var transInfo2 = new TransferInfo(100, bob.PublicKey);
             var transInfo3 = new TransferInfo(40, alice.PublicKey);
             var transInfos = new TransferInfo[] { transInfo1, transInfo2, transInfo3 };
-            var transIds = transInfos.ToTransIds();
+            var transIds = transInfos.ToTransIdsLinkedList();
 
             var approval = scrooge2.Temp(transIds);
 

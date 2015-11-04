@@ -8,7 +8,7 @@ namespace Global
 {
     public static class Extension
     {
-        public static TransferIdLinkedList ToTransIds(this TransferInfo[] infos)
+        public static TransferIdLinkedList ToTransIdsLinkedList(this TransferInfo[] infos)
         {
             var transId = new TransferIdLinkedList();
 
@@ -18,6 +18,20 @@ namespace Global
             }
 
             return transId;
+        }
+
+        public static TransferIdNode[] ToTransIdsArray(this TransferInfo[] infos)
+        {
+            TransferIdNode[] transIdArray = new TransferIdNode[infos.Length];
+            TransferIdNode transId = null;
+
+            for (int x = 0; x <= infos.Length - 1; x++)
+            {
+                transId = new TransferIdNode(transId, infos[x].Value, infos[x].DestinyPk, x);
+                transIdArray[x] = transId;
+            }
+
+            return transIdArray;
         }
     }
 }
