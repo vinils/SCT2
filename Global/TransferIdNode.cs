@@ -15,10 +15,6 @@
             this.value = value;
         }
 
-        public TransferIdNode(TransferIdNode last, double value, Bytes destinyPk)
-            : this(last, value, destinyPk, last == null ? 1 : ((int)last.Id) + 1)
-        { }
-
         public Bytes DestinyPk
         {
             get { return this.destinyPk; }

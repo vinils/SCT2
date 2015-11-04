@@ -12,9 +12,9 @@ namespace Global
         {
             var transId = new TransferIdLinkedList();
 
-            foreach (var info in infos)
+            for(int x = 0; x<= infos.Length -1; x++)
             {
-                transId.Add(info.Value, info.DestinyPk);
+                transId.Add(infos[x].Value, infos[x].DestinyPk, x);
             }
 
             return transId;

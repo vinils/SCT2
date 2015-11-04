@@ -132,5 +132,18 @@ namespace Global
         {
             return this.GetEnumerator();
         }
+
+        public T[] ToArray()
+        {
+            var count = this.Count;
+            var arrIds = new T[count];
+
+            foreach (var node in this)
+            {
+                arrIds[--count] = node;
+            }
+
+            return arrIds;
+        }
     }
 }

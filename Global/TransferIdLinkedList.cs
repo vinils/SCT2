@@ -16,9 +16,9 @@
         {
         }
 
-        public void Add(double value, Bytes destinyPk)
+        public void Add(double value, Bytes destinyPk, int id)
         {
-            Head = new TransferIdNode(Head, value, destinyPk);
+            Head = new TransferIdNode(Head, value, destinyPk, id);
         }
 
         public TransferIdNode Find(int id)
@@ -31,18 +31,10 @@
             base.Remove(id);
         }
 
-        public TransferIdNode[] ToArray()
-        {
-            var count = this.Count;
-            var arrIds = new TransferIdNode[count];
-
-            foreach (var node in this)
-            {
-                arrIds[--count] = node;
-            }
-
-            return arrIds;
-        }
+        //public TransferIdNode[] ToArray()
+        //{
+        //    return base.ToArray();
+        //}
 
         public bool IsSameDestiny()
         {
